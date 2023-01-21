@@ -43,6 +43,6 @@ model Post {
   title        String  @db.VarChar(255)
   description  String?  @db.VarChar(255)
   district     String?  @db.VarChar(255)
-  active        Status @default(LOST)
+  status        Status @default(LOST)
   imagesURL String[]
 }
