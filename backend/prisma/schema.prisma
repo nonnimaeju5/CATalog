@@ -31,7 +31,7 @@ model User {
 
 
 enum Status {
-  ACTIVE
+  LOST
   FOUND
   ARCHIVED
 }
@@ -43,6 +43,6 @@ model Post {
   title        String  @db.VarChar(255)
   description  String?  @db.VarChar(255)
   district     String?  @db.VarChar(255)
-  active        Status @default(ACTIVE)
+  active        Status @default(LOST)
   imagesURL String[]
 }
