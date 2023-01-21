@@ -4,6 +4,11 @@ import router from "./router.js";
 import morgan from "morgan";
 import cors from "cors";
 import { createNewUser, signIn } from "./handlers/user.js";
+import {
+	handleInputErrors,
+	signInValidation,
+	signUpValidation,
+} from "./middleware/validation.js";
 
 const app = express();
 
@@ -19,6 +24,16 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", protect, router);
-app.post("/signup", createNewUser);
-app.post("/signin", signIn);
+app.post("/signup", [signUpValidation, handleInputErrors], createNewUser);
+app.post("/signin", [signInValidation, handleInputErrors], signIn);
+
+app.use((err, req, res, next) => {
+	if (err.type === "auth") {
+		res.status(401).json({ message: "Unauthorized access." });
+	} else if (err.type === "input") {
+		res.status(err.code || 400).json({ message: err.message });
+	} else {
+		res.status(err.code || 500).json({ message: err.message });
+	}
+});
 export default app;
