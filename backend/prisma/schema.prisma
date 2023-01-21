@@ -15,60 +15,34 @@ enum UserRole {
   USER
 }
 
-enum PreferedContact {
-  EMAIL
-  PHONE
-  SMS
-}
 
 model User {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
-  email     String   @unique
   username  String   @unique
   password  String
-  phone     String   @unique
+  email     String?   @unique
+  phone     String?   @unique
   name      String?
   role      UserRole @default(USER)
-  preferedContact PreferedContact[]
-  pets  Pet[]
   posts Post[]
 }
 
-enum PetType {
-  CAT
-  DOG
-  OTHER
-}
 
-model Pet {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-  name        String  @db.VarChar(255)
-  belongsTo   User     @relation(fields: [belongsToId], references: [id])
-  chipId      String?
-  belongsToId String
-  lastSeen    DateTime @default(now())
-  status      PetType
-  posts     Post[]
-}
 
-enum PetStatus {
-  LOST
+enum Status {
+  ACTIVE
   FOUND
-  FORADOPTION
-  OTHER
+  ARCHIVED
 }
-
 model Post {
   id          String   @id @default(uuid())
   createdAt   DateTime @default(now())
   postedBy    User     @relation(fields: [postedById], references: [id])
   postedById String
-  postedAbout   Pet     @relation(fields: [postedAboutId], references: [id])
-  postedAboutId String
   title        String  @db.VarChar(255)
   description  String?  @db.VarChar(255)
   district     String?  @db.VarChar(255)
-  active        Boolean @default(true)
+  active        Status @default(ACTIVE)
+  imagesURL String[]
 }
