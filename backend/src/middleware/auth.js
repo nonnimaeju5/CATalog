@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 export const createToken = (user) => {
 	const token = jwt.sign(
@@ -15,19 +16,43 @@ export const createToken = (user) => {
 	return token;
 };
 
+export const hashPassword = async (password) => {
+	const salt = await bcrypt.genSalt(10);
+	const hashedPassword = await bcrypt.hash(password, salt);
+	return hashedPassword;
+};
+
+export const comparePassword = async (password, hashedPassword) => {
+	const isMatch = await bcrypt.compare(password, hashedPassword);
+	return isMatch;
+};
+
 export const protect = (req, res, next) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	console.log("token: ", token);
 	if (!token) {
-		res.status(401);
-		throw new Error("Not authorized, no token");
+		const error = new Error("Not authorized, token missing.");
+		error.type = "auth";
+		next(error);
 	}
 	try {
 		const decoded = jwt.verify(token, process.env.JWT_SECRET);
 		req.user = decoded;
 		next();
 	} catch (error) {
-		res.status(401);
-		throw new Error("Not authorized, token failed");
+		error.type = "auth";
+		error.message = "Not authorized, token failed.";
+		next(error);
+	}
+};
+
+export const isAdmin = (req, res, next) => {
+	if (req.user && req.user.role === "admin") {
+		next();
+	} else {
+		const error = new Error("Not authorized. Admin only.");
+		error.type = "auth";
+		error.code = 403;
+		next(error);
 	}
 };
