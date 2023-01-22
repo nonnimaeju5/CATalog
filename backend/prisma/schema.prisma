@@ -39,7 +39,7 @@ model Post {
   id          String   @id @default(uuid())
   createdAt   DateTime @default(now())
   postedBy    User     @relation(fields: [postedById], references: [id])
-  postedById String
+  postedById String   @unique
   title        String  @db.VarChar(255)
   description  String?  @db.VarChar(255)
   district     String?  @db.VarChar(255)
