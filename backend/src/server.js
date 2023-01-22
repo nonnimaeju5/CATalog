@@ -3,6 +3,7 @@ import express from "express";
 import router from "./router.js";
 import morgan from "morgan";
 import cors from "cors";
+import { getPosts } from "./handlers/post.js";
 import { createNewUser, signIn } from "./handlers/user.js";
 import {
 	handleInputErrors,
@@ -22,7 +23,7 @@ app.get("/", (req, res) => {
 	res.json({ message: "hello" });
 	res.status(200);
 });
-
+app.use("/posts", getPosts);
 app.use("/api", protect, router);
 app.post("/signup", [signUpValidation, handleInputErrors], createNewUser);
 app.post("/signin", [signInValidation, handleInputErrors], signIn);
