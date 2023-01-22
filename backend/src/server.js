@@ -29,7 +29,7 @@ app.post("/signin", [signInValidation, handleInputErrors], signIn);
 
 app.use((err, req, res, next) => {
 	if (err.type === "auth") {
-		res.status(401).json({ message: "Unauthorized access." });
+		res.status(err.code || 401).json({ message: err.message });
 	} else if (err.type === "input") {
 		res.status(err.code || 400).json({ message: err.message });
 	} else {
